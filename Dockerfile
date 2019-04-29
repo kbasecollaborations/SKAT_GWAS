@@ -17,6 +17,25 @@ RUN chmod -R a+rw /kb/module
 
 WORKDIR /kb/module
 
+RUN apt-get install -y netselect-apt
+
+RUN rm /etc/apt/sources.list
+
+RUN netselect-apt -o /etc/apt/sources.list
+
+RUN apt-get update -y
+
+RUN apt-get install -y r-base \
+    && apt-get install -y vim
+
+RUN pip install --upgrade pip \
+	  && pip install --upgrade requests \
+    && pip install -q pyvcf
+
+RUN Rscript -e 'install.packages("SKAT", repos="http://cran.rstudio.com/")'
+RUN Rscript -e 'install.packages("data.tables", repos="http://cran.rstudio.com/")'
+RUN Rscript -e 'install.packages("qqman", repos="http://cran.rstudio.com/")'
+
 RUN make all
 
 ENTRYPOINT [ "./scripts/entrypoint.sh" ]
